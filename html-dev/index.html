@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script>
+const audioRequestUrl_TEST = "http://localhost:8080/test-file/test_audio.mp3";
+function fetchAudio(audioRequestUrl) {
+  return fetch(audioRequestUrl);
+}
+function testFetchAudio() {
+  fetchAudio(
+    audioRequestUrl_TEST
+  ).then(result => {
+    console.log(result);
+    const blob = new Blob([result], {type: 'audio/ogg'});
+    const blobUrl = URL.createObjectURL(blob);
+    playAudio(blobUrl);
+  }).catch(error => {
+    console.error(error);
+  });
+}
+function playAudio(url) {
+  const audioElm = new Audio(url);
+  audioElm.crossOrigin = 'anonymous';
+  audioElm.play();
+}
+//===========================
+function testFetchAudioV2() {
+  const audioElm = new Audio(audioRequestUrl_TEST);
+  audioElm.play();
+}
+  </script>
+</head>
+<body>
+<div>
+  <div>
+    <button onclick="testFetchAudio()">Fetch audio</button>
+  </div>
+  <div>
+    <button onclick="testFetchAudioV2()">Fetch audio v2</button>
+  </div>
+</div>
+<div>
+  <div id="elmId-testAudio"></div>
+</div>
+</body>
+</html>

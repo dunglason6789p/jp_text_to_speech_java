@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="/my-static/stomp.js"></script>
+  <script src="/my-static/sockjs.js"></script>
+  <script>
+let stompClient = null;
+function connect() {
+  const socket = new SockJS('http://localhost:8080/gs-guide-websocket');
+  stompClient = Stomp.over(socket);
+  stompClient.connect({}, function (frame) {
+    console.log('Connected: ' + frame);
+    stompClient.subscribe('/topic/greetings', function (greeting) {
+      console.log(JSON.parse(greeting.body).content);
+    });
+  });
+}
+function disconnect() {
+  if (stompClient !== null) {
+    stompClient.disconnect();
+  }
+  setConnected(false);
+  console.log("Disconnected");
+}
+function sendName() {
+  stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+}
+  </script>
+</head>
+<body>
+<button onclick="connect()">
+  Connect
+</button>
+</body>
+</html>
