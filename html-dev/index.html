@@ -5,40 +5,39 @@
   <title>Title</title>
   <script>
 const audioRequestUrl_TEST = "http://localhost:8080/test-file/test_audio.mp3";
-function fetchAudio(audioRequestUrl) {
-  return fetch(audioRequestUrl);
-}
-function testFetchAudio() {
-  fetchAudio(
-    audioRequestUrl_TEST
-  ).then(result => {
-    console.log(result);
-    const blob = new Blob([result], {type: 'audio/ogg'});
-    const blobUrl = URL.createObjectURL(blob);
-    playAudio(blobUrl);
-  }).catch(error => {
-    console.error(error);
-  });
-}
-function playAudio(url) {
-  const audioElm = new Audio(url);
-  audioElm.crossOrigin = 'anonymous';
-  audioElm.play();
-}
 //===========================
 function testFetchAudioV2() {
   const audioElm = new Audio(audioRequestUrl_TEST);
   audioElm.play();
+}
+function execTextToSpeech() {
+  const textInput = document.querySelector("#elmId_textInput").value;
+  if (!textInput) {
+    alert("Empty input!")
+  } else {
+    const urlTTS = "http://localhost:8080/tts"
+    fetch(urlTTS, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: textInput,
+      }) // body data type must match "Content-Type" header
+    }).then(result => {
+
+    }).catch(error => {
+
+    });
+  }
 }
   </script>
 </head>
 <body>
 <div>
   <div>
-    <button onclick="testFetchAudio()">Fetch audio</button>
-  </div>
-  <div>
-    <button onclick="testFetchAudioV2()">Fetch audio v2</button>
+    <input id="elmId_textInput">
+    <button onclick="execTextToSpeech()">Fetch audio</button>
   </div>
 </div>
 <div>

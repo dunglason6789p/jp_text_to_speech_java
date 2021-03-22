@@ -30,7 +30,15 @@ public class MyTextToSpeechService {
         }
     }
 
-    private boolean textToSpeech(
+    private String buildAudioFilePath(
+            final String text,
+            final LanguageCode languageCode,
+            final SsmlVoiceGender voiceGender
+    ) {
+        return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+text+".mp3";
+    }
+
+    private String textToSpeech(
             final String text,
             final LanguageCode languageCode,
             final SsmlVoiceGender voiceGender,
@@ -57,23 +65,16 @@ public class MyTextToSpeechService {
             ByteString audioContents = response.getAudioContent();
             
             // Write the response to the output file.
-            try (OutputStream out = new FileOutputStream("output.mp3")) {
+            String filePathStr = buildAudioFilePath(text, languageCode, voiceGender);
+            try (OutputStream out = new FileOutputStream(filePathStr)) {
                 out.write(audioContents.toByteArray());
-                System.out.println("Audio content written to file \"output.mp3\"");
-                return true;
+                System.out.println("Audio content written to file:"+filePathStr);
+                return filePathStr;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
-    }
-
-    private String buildAudioFilePath(
-            final String text,
-            final LanguageCode languageCode,
-            final SsmlVoiceGender voiceGender
-    ) {
-        return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+text+".mp3";
     }
 
     public String processTextToSpeechOrCached(
@@ -88,8 +89,8 @@ public class MyTextToSpeechService {
         if (isFileExist) {
             return filePathStr;
         } else {
-            boolean isTTSSuccessful = textToSpeech(text, languageCode, voiceGender, AudioEncoding.MP3);
-            if (isTTSSuccessful) {
+            String filePathStrTTS = textToSpeech(text, languageCode, voiceGender, AudioEncoding.MP3);
+            if (filePathStrTTS != null && !filePathStr.isEmpty()) {
                 return filePathStr;
             } else {
                 return null;
