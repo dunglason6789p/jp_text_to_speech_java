@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +28,8 @@ public class MyTTSController {
     }
     private MyTextToSpeechService myTextToSpeechService;
     
-    @PostMapping(value = "/tts")
-    public void getFile(
+    @PostMapping(value = "/tts-stream-file")
+    public void processTextToSpeechOrCached_streamFile(
             @RequestBody MyTTSRequest request,
             HttpServletResponse httpServletResponse
     ) {
@@ -40,8 +41,22 @@ public class MyTTSController {
         }
         // Process TTS.
         String filePathStr = myTextToSpeechService.processTextToSpeechOrCached(
-                request.getText(), request.getLanguage(), request.getGender());
+                request.getText(), request.getLanguageOrDefault(), request.getGenderOrDefault());
         // Send response.
         HTTPUtil.sendFileResponse(httpServletResponse, filePathStr);
+    }
+
+    @PostMapping(value = "/tts")
+    public ResponseEntity<String> processTextToSpeechOrCached(
+            @RequestBody MyTTSRequest request
+    ) {
+        // Validate request.
+        if (request == null || request.getText() == null || request.getText().trim().isEmpty()) {
+            throw new IllegalArgumentException("Invalid request! request=" + JSONUtil.jsonString(request));
+        }
+        // Process TTS.
+        myTextToSpeechService.processTextToSpeechOrCached(
+                request.getText(), request.getLanguageOrDefault(), request.getGenderOrDefault());
+        return new ResponseEntity<>("OK!", HttpStatus.OK);
     }
 }

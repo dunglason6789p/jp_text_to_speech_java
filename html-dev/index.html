@@ -4,18 +4,14 @@
   <meta charset="UTF-8">
   <title>Title</title>
   <script>
-const audioRequestUrl_TEST = "http://localhost:8080/test-file/test_audio.mp3";
+const ROOT_URL = "http://localhost:8080"
 //===========================
-function testFetchAudioV2() {
-  const audioElm = new Audio(audioRequestUrl_TEST);
-  audioElm.play();
-}
 function execTextToSpeech() {
   const textInput = document.querySelector("#elmId_textInput").value;
   if (!textInput) {
-    alert("Empty input!")
+    alert('Empty input!')
   } else {
-    const urlTTS = "http://localhost:8080/tts"
+    const urlTTS = ROOT_URL+'/tts'
     fetch(urlTTS, {
       method: 'POST',
       headers: {
@@ -25,11 +21,18 @@ function execTextToSpeech() {
         text: textInput,
       }) // body data type must match "Content-Type" header
     }).then(result => {
-
+      console.log('result=<below>');
+      console.log(result);
+      playAudioFromUrl(`${ROOT_URL}/my-audio/FEMALE/JA_JP/${textInput}.mp3`);
     }).catch(error => {
-
+      console.error('error=<below>');
+      console.error(error);
     });
   }
+}
+function playAudioFromUrl(audioUrl) {
+  const audioElm = new Audio(audioUrl);
+  audioElm.play();
 }
   </script>
 </head>

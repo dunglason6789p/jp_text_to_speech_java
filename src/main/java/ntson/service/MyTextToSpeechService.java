@@ -11,6 +11,8 @@ import com.google.cloud.texttospeech.v1.VoiceSelectionParams;
 import com.google.protobuf.ByteString;
 import ntson.enums.LanguageCode;
 import ntson.util.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -20,6 +22,8 @@ import java.io.OutputStream;
 
 @Service
 public class MyTextToSpeechService {
+    private static Logger logger = LoggerFactory.getLogger(MyTextToSpeechService.class);
+
     final private TextToSpeechClient textToSpeechClient;
 
     public MyTextToSpeechService() {
@@ -87,8 +91,10 @@ public class MyTextToSpeechService {
         String filePathStr = buildAudioFilePath(text, languageCode, voiceGender);
         boolean isFileExist = FileUtil.isFileExist(filePathStr);
         if (isFileExist) {
+            logger.info("File with path {} exists! Now returning that path!", filePathStr);
             return filePathStr;
         } else {
+            logger.info("File with path {} NOT exists! Now calling Google TTS API!", filePathStr);
             String filePathStrTTS = textToSpeech(text, languageCode, voiceGender, AudioEncoding.MP3);
             if (filePathStrTTS != null && !filePathStr.isEmpty()) {
                 return filePathStr;
