@@ -46,7 +46,7 @@ public class MyTTSController {
         HTTPUtil.sendFileResponse(httpServletResponse, filePathStr);
     }
 
-    @PostMapping(value = "/tts")
+    @PostMapping(value = "/tts", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<String> processTextToSpeechOrCached(
             @RequestBody MyTTSRequest request
     ) {
@@ -55,8 +55,9 @@ public class MyTTSController {
             throw new IllegalArgumentException("Invalid request! request=" + JSONUtil.jsonString(request));
         }
         // Process TTS.
-        myTextToSpeechService.processTextToSpeechOrCached(
+        String filePathStr = myTextToSpeechService.processTextToSpeechOrCached(
                 request.getText(), request.getLanguageOrDefault(), request.getGenderOrDefault());
-        return new ResponseEntity<>("OK!", HttpStatus.OK);
+        logger.info("Returning to client: filePathStr={}", filePathStr);
+        return new ResponseEntity<>(filePathStr, HttpStatus.OK);
     }
 }

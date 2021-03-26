@@ -34,11 +34,24 @@ public class MyTextToSpeechService {
         }
     }
 
+    private static final char[] ILLEGAL_CHARS = {'\\','/',':','*','?','"','<','>','|','\n','\r','\t'};
+    private boolean isTextContainsIllegalChar(String text) {
+        for (char illegalChar : ILLEGAL_CHARS) {
+            if (text.indexOf(illegalChar) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private String buildAudioFilePath(
             final String text,
             final LanguageCode languageCode,
             final SsmlVoiceGender voiceGender
     ) {
+        if (isTextContainsIllegalChar(text)) {
+            return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+(text.hashCode())+".mp3";
+        }
         return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+text+".mp3";
     }
 
