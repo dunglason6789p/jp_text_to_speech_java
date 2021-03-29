@@ -1,0 +1,2 @@
+java -jar out\artifacts\jp_text_to_speech_java_jar\jp_text_to_speech_java.jar
+pause
