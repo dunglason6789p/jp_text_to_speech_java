@@ -5,7 +5,15 @@
 
 /.idea
 *.iml
+.mvn
+
+out
 
 npm-debug.log
 
 package-lock.json
+
+file/test
+audio_OLD
+
+*.rar
