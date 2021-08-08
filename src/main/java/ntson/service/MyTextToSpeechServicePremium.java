@@ -40,15 +40,33 @@ public class MyTextToSpeechServicePremium {
         return false;
     }
 
+    private String buildFileExtensionFromAudioEncoding(AudioEncoding audioEncoding) {
+        switch (audioEncoding) {
+            case MP3: return "mp3";
+            case OGG_OPUS: return "ogg";
+            case LINEAR16: return "wav";
+            default: return null;
+        }
+    }
+
+    private String buildAudioFilePath(
+            final String text,
+            final LanguageCode languageCode,
+            final SsmlVoiceGender voiceGender,
+            final AudioEncoding audioEncoding
+    ) {
+        final String fileExtensionWithDot = "." + buildFileExtensionFromAudioEncoding(audioEncoding);
+        if (isTextContainsIllegalChar(text)) {
+            return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+(text.hashCode())+fileExtensionWithDot;
+        }
+        return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+text+fileExtensionWithDot;
+    }
     private String buildAudioFilePath(
             final String text,
             final LanguageCode languageCode,
             final SsmlVoiceGender voiceGender
     ) {
-        if (isTextContainsIllegalChar(text)) {
-            return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+(text.hashCode())+".mp3";
-        }
-        return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+text+".mp3";
+        return buildAudioFilePath(text, languageCode, voiceGender, AudioEncoding.MP3);
     }
 
     private String textToSpeechWaveNetJp(
@@ -76,7 +94,7 @@ public class MyTextToSpeechServicePremium {
             ByteString audioContents = response.getAudioContent();
             
             // Write the response to the output file.
-            String filePathStr = buildAudioFilePath(text, LanguageCode.JA_JP, SsmlVoiceGender.FEMALE);
+            String filePathStr = buildAudioFilePath(text, LanguageCode.JA_JP, SsmlVoiceGender.FEMALE, audioEncoding);
             try (OutputStream out = new FileOutputStream(filePathStr)) {
                 out.write(audioContents.toByteArray());
                 System.out.println("Audio content written to file:"+filePathStr);
@@ -89,21 +107,31 @@ public class MyTextToSpeechServicePremium {
     }
 
     public String processTextToSpeechOrCachedWaveNetJp(
-            final String text
+            final String text,
+            final AudioEncoding audioEncoding
     ) {
-        String filePathStr = buildAudioFilePath(text, LanguageCode.JA_JP, SsmlVoiceGender.FEMALE);
+        final String filePathStr = buildAudioFilePath(text, LanguageCode.JA_JP, SsmlVoiceGender.FEMALE, audioEncoding);
         boolean isFileExist = FileUtil.isFileExist(filePathStr);
         if (isFileExist) {
             logger.info("File with path {} exists! Now returning that path!", filePathStr);
             return filePathStr;
         } else {
             logger.info("File with path {} NOT exists! Now calling Google TTS API!", filePathStr);
-            String filePathStrTTS = textToSpeechWaveNetJp(text, AudioEncoding.MP3);
+            String filePathStrTTS = textToSpeechWaveNetJp(text, audioEncoding);
             if (filePathStrTTS != null && !filePathStr.isEmpty()) {
                 return filePathStr;
             } else {
                 return null;
             }
         }
+    }
+    public String processTextToSpeechOrCachedWaveNetJp(
+            final String text
+    ) {
+        return processTextToSpeechOrCachedWaveNetJp(text, AudioEncoding.MP3);
+    }
+
+    public String preprocessJapaneseText(String jpText) {
+        return jpText.replace(" ", "");
     }
 }
