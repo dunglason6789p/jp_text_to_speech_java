@@ -62,6 +62,27 @@ public class MainAuto_EnJpSentences {
             EnJaSentenceRow enJaSentenceRow = new EnJaSentenceRow(lessonId, englishRawText, japaneseRawText);
             listEnJaSentenceRow.add(enJaSentenceRow);
         }
-        System.out.println(listEnJaSentenceRow);
+        logger.info("listEnJaSentenceRow={}", listEnJaSentenceRow);
+
+        for (EnJaSentenceRow enJaSentenceRow : listEnJaSentenceRow) {
+            String japaneseNoSpaceText = enJaSentenceRow.getJapaneseNoSpaceText();
+            String filePathTTSJapanese
+                    = myTextToSpeechServicePremium.processTextToSpeechOrCachedWaveNetJp(japaneseNoSpaceText, AudioEncoding.OGG_OPUS);
+            logger.info("filePathTTSJapanese={}", filePathTTSJapanese);
+            sleepStandard();
+            //--------------
+            String englishTrimmedText = enJaSentenceRow.getEnglishTrimmedText();
+            String filePathTTSEnglish
+                    = myTextToSpeechService.processTextToSpeechOrCachedV2(englishTrimmedText, LanguageCode.EN_US);
+            logger.info("filePathTTSEnglish={}", filePathTTSEnglish);
+            sleepStandard();
+        }
+    }
+    private static void sleepStandard() {
+        try {
+            Thread.sleep(1000/*TODO:DEMO*/);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -148,4 +148,10 @@ public class MyTextToSpeechService {
             }
         }
     }
+    public String processTextToSpeechOrCachedV2(
+            final String textInput,
+            final LanguageCode languageCode
+    ) {
+        return this.processTextToSpeechOrCachedV2(textInput, languageCode, true);
+    }
 }
