@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class FileUtil {
     public static boolean isFileExist(String filePathStr) {
@@ -15,5 +17,17 @@ public class FileUtil {
     public static String readEntireTextFile(File file, Charset encoding) throws IOException {
         byte[] encoded = Files.readAllBytes(file.toPath());
         return new String(encoded, encoding);
+    }
+    public static void createDirectoriesOptional(String pathStr, BiConsumer<IOException, String> ioExceptionHandler) {
+        try {
+            Files.createDirectories(Paths.get(pathStr));
+        } catch (IOException e) {
+            if (ioExceptionHandler != null) {
+                ioExceptionHandler.accept(e, pathStr);
+            }
+        }
+    }
+    public static void createDirectoriesOptional(String pathStr) {
+        createDirectoriesOptional(pathStr, null);
     }
 }

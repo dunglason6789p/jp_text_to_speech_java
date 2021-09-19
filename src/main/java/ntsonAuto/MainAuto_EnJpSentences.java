@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import ntson.enums.LanguageCode;
 import ntson.model.EnJaSentenceRow;
+import ntson.service.MyFileService;
 import ntson.service.MyTextToSpeechService;
 import ntson.service.MyTextToSpeechServicePremium;
 import ntson.util.LogUtil;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static ntson.util.ExceptionUtil.tryGet;
+import static ntson.util.FileUtil.createDirectoriesOptional;
 import static ntson.util.FileUtil.readEntireTextFile;
 import static ntson.util.LogUtil.logExceptionAndReturnNull;
 import static ntson.util.StringUtil.isNullOrBlank;
@@ -37,11 +39,21 @@ public class MainAuto_EnJpSentences {
     private static final String INPUT_SHEET_NAME = "VNorENtoJP_tasks";
     private static final Integer MAX_ROW_COUNT_CONSIDER = 10000;
     private static final Logger logger = LoggerFactory.getLogger(MainAuto_EnJpSentences.class);
+    // private static final MyFileService myFileService = new MyFileService();
     private static final MyTextToSpeechService myTextToSpeechService = new MyTextToSpeechService();
     private static final MyTextToSpeechServicePremium myTextToSpeechServicePremium = new MyTextToSpeechServicePremium(
                 myTextToSpeechService.getTextToSpeechClient() // Reuse client.
     );
     public static void main(String[] args) throws Exception {
+        // Create audio output folders:
+        createDirectoriesOptional(MyFileService.OUTPUT_AUDIO_FOLDER_PATH_FEMALE_EN_US,
+                (ioException, pathStr) -> logger.error("Error while creating/checking folder {}", pathStr, ioException));
+        createDirectoriesOptional(MyFileService.OUTPUT_AUDIO_FOLDER_PATH_FEMALE_JA_JP,
+                (ioException, pathStr) -> logger.error("Error while creating/checking folder {}", pathStr, ioException));
+        createDirectoriesOptional(MyFileService.OUTPUT_AUDIO_FOLDER_PATH_FEMALE_VI_VN,
+                (ioException, pathStr) -> logger.error("Error while creating/checking folder {}", pathStr, ioException));
+
+        // Read input excel file:
         FileInputStream inputFile = new FileInputStream(INPUT_FILE_PATH);
         Workbook workbook = new XSSFWorkbook(inputFile);
         Sheet inputSheet = workbook.getSheet(INPUT_SHEET_NAME);
