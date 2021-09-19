@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 
+import static ntson.service.MyFileService.buildAudioFilePath;
+
 @Service
 public class MyTextToSpeechService {
     private static final String CREDENTIAL_FILE_PATH = "credentials/main-project--credential--owner.json";
@@ -49,6 +51,7 @@ public class MyTextToSpeechService {
         return false;
     }
 
+    /*
     private String buildAudioFilePath(
             final String text,
             final LanguageCode languageCode,
@@ -59,6 +62,7 @@ public class MyTextToSpeechService {
         }
         return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+text+".mp3";
     }
+    */
 
     private String textToSpeech(
             final String text,

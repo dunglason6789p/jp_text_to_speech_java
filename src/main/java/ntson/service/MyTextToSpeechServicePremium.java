@@ -20,6 +20,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static ntson.service.MyFileService.buildAudioFilePath;
+
 public class MyTextToSpeechServicePremium {
     private static final String VOICE_NAME_FEMALE_JP_WAVENET_B = "ja-JP-Wavenet-B";
     private static final Logger logger = LoggerFactory.getLogger(MyTextToSpeechService.class);
@@ -28,45 +30,6 @@ public class MyTextToSpeechServicePremium {
 
     public MyTextToSpeechServicePremium(TextToSpeechClient textToSpeechClientInput) {
         this.textToSpeechClient = textToSpeechClientInput;
-    }
-
-    private static final char[] ILLEGAL_CHARS = {'\\','/',':','*','?','"','<','>','|','\n','\r','\t'};
-    private boolean isTextContainsIllegalChar(String text) {
-        for (char illegalChar : ILLEGAL_CHARS) {
-            if (text.indexOf(illegalChar) >= 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private String buildFileExtensionFromAudioEncoding(AudioEncoding audioEncoding) {
-        switch (audioEncoding) {
-            case MP3: return "mp3";
-            case OGG_OPUS: return "ogg";
-            case LINEAR16: return "wav";
-            default: return null;
-        }
-    }
-
-    private String buildAudioFilePath(
-            final String text,
-            final LanguageCode languageCode,
-            final SsmlVoiceGender voiceGender,
-            final AudioEncoding audioEncoding
-    ) {
-        final String fileExtensionWithDot = "." + buildFileExtensionFromAudioEncoding(audioEncoding);
-        if (isTextContainsIllegalChar(text)) {
-            return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+(text.hashCode())+fileExtensionWithDot;
-        }
-        return "audio/"+voiceGender.name()+"/"+languageCode.name()+"/"+text+fileExtensionWithDot;
-    }
-    private String buildAudioFilePath(
-            final String text,
-            final LanguageCode languageCode,
-            final SsmlVoiceGender voiceGender
-    ) {
-        return buildAudioFilePath(text, languageCode, voiceGender, AudioEncoding.MP3);
     }
 
     private String textToSpeechWaveNetJp(
