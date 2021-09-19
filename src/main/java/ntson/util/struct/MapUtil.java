@@ -13,7 +13,7 @@ public class MapUtil {
         return map;
     }
     public static class MapBuilder<K,V> {
-        public static <K,V> MapBuilder<K,V> newBuilder() {
+        public static <K,V> MapBuilder<K,V> newBuilder(Class<K> keyClazz, Class<V> valueClazz) {
             return new MapBuilder<>();
         }
         private final Map<K,V> internalMap;
