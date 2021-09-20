@@ -6,8 +6,12 @@ public class EnJaSentenceRow {
     public final String lessonId;
     public final String englishRawText;
     public final String japaneseRawText;
+
+    public String japaneseRepresentative = null;
+
     private String englishTrimmedText = null;
     private String japaneseNoSpaceText = null;
+
     public String getJapaneseNoSpaceText() {
         if (this.japaneseNoSpaceText == null) {
             this.japaneseNoSpaceText = this.japaneseRawText.trim()
