@@ -92,7 +92,7 @@ public class MainAuto_EnJpSentences {
     }
     private static void sleepStandard() {
         try {
-            Thread.sleep(1000/*TODO:DEMO*/);
+            Thread.sleep(500/*TODO:DEMO*/);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
