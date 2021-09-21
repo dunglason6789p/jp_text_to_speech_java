@@ -1,6 +1,7 @@
 package ntsonAuto;
 
 import com.google.cloud.texttospeech.v1.AudioEncoding;
+import com.google.cloud.texttospeech.v1.SsmlVoiceGender;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
@@ -12,6 +13,7 @@ import ntson.service.MyPasswordService;
 import ntson.service.MyTextToSpeechService;
 import ntson.service.MyTextToSpeechServicePremium;
 import ntson.util.LogUtil;
+import ntson.util.StringFancy;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -36,6 +38,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import static ntson.service.MyFileService.buildAudioFilePath;
+import static ntson.service.MyFileService.writeToTextFile;
 import static ntson.util.ExceptionUtil.tryGet;
 import static ntson.util.FileUtil.createDirectoriesOptional;
 import static ntson.util.FileUtil.readEntireTextFile;
@@ -78,21 +82,33 @@ public class MainAuto_EnJp_JsonOnly {
             }
             EnJaSentenceRow enJaSentenceRow = new EnJaSentenceRow(lessonId, englishRawText, japaneseRawText);
             if (representativeJapaneseText != null) {
-                enJaSentenceRow.japaneseRepresentative = representativeJapaneseText;
+                enJaSentenceRow.japaneseRepresentativeText = representativeJapaneseText;
             }
+            enJaSentenceRow.englishAudioFileName = buildAudioFilePath(enJaSentenceRow.getEnglishTrimmedText(),
+                    LanguageCode.EN_US, SsmlVoiceGender.FEMALE, AudioEncoding.MP3);
+            enJaSentenceRow.japaneseAudioFileName = buildAudioFilePath(enJaSentenceRow.getJapaneseNoSpaceText(),
+                    LanguageCode.JA_JP, SsmlVoiceGender.FEMALE, AudioEncoding.OGG_OPUS);
             listEnJaSentenceRow.add(enJaSentenceRow);
         }
         logger.info("listEnJaSentenceRow={}", listEnJaSentenceRow);
 
         StringWriter stringWriter = new StringWriter();
         JsonWriter jsonWriter = new JsonWriter(stringWriter);
-        jsonWriter.setIndent("   ");
+        jsonWriter.setIndent(StringFancy.SPACE2);
         Gson gson = new GsonBuilder()
+                .disableHtmlEscaping()
+                .excludeFieldsWithoutExposeAnnotation()
                 .create();
         gson.toJson(listEnJaSentenceRow, Object.class, jsonWriter);
         jsonWriter.close();
 
-        System.out.println(stringWriter.toString());
+        String json = stringWriter.toString();
+        System.out.println(json);
+
+        writeToTextFile(
+                Paths.get(MyFileService.OUTPUT_FOLDER_NAME),
+                MyFileService.OUTPUT_ENJASENTENCES_JSON_FILENAME,
+                json);
     }
     private static Object tryReadCell(Row row, int cellnum) {
         if (row != null) {

@@ -27,7 +27,7 @@ public class FileUtil {
             }
         }
     }
-    public static void createDirectoriesOptional(String pathStr) {
-        createDirectoriesOptional(pathStr, null);
+    public static void createDirectoriesOptional(String pathStr) throws IOException {
+        Files.createDirectories(Paths.get(pathStr));
     }
 }
