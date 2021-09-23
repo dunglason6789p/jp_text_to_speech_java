@@ -85,13 +85,11 @@ public class MainAuto_EnJpSentences {
             String filePathTTSJapanese
                     = myTextToSpeechServicePremium.processTextToSpeechOrCachedWaveNetJp(japaneseNoSpaceText, AudioEncoding.OGG_OPUS);
             logger.info("filePathTTSJapanese={}", filePathTTSJapanese);
-            sleepStandard();
             //--------------
             String englishTrimmedText = enJaSentenceRow.getEnglishTrimmedText();
             String filePathTTSEnglish
                     = myTextToSpeechService.processTextToSpeechOrCachedV2(englishTrimmedText, LanguageCode.EN_US);
             logger.info("filePathTTSEnglish={}", filePathTTSEnglish);
-            sleepStandard();
         }
     }
     private static void sleepStandard() {

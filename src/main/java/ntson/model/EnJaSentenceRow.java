@@ -3,6 +3,9 @@ package ntson.model;
 import com.google.gson.annotations.Expose;
 import ntson.util.StringFancy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EnJaSentenceRow {
     @Expose
     public final String lessonId;
@@ -17,6 +20,11 @@ public class EnJaSentenceRow {
     public String japaneseAudioFileName = null;
     @Expose
     public String japaneseRepresentativeText = null;
+
+    @Expose
+    public List<SentenceInfo> englishSentences = null;
+    @Expose
+    public List<SentenceInfo> japaneseSentences = null;
 
     private String englishTrimmedText = null;
     private String japaneseNoSpaceText = null;
@@ -35,6 +43,22 @@ public class EnJaSentenceRow {
         }
         return this.englishTrimmedText;
     }
+
+    public EnJaSentenceRow addSentenceEnglish(String rawText, String audioFileName) {
+        if (this.englishSentences == null) {
+            this.englishSentences = new ArrayList<>();
+        }
+        this.englishSentences.add(new SentenceInfo(rawText, audioFileName));
+        return this;
+    }
+    public EnJaSentenceRow addSentenceJapanese(String rawText, String audioFileName) {
+        if (this.japaneseSentences == null) {
+            this.japaneseSentences = new ArrayList<>();
+        }
+        this.japaneseSentences.add(new SentenceInfo(rawText, audioFileName));
+        return this;
+    }
+
     public EnJaSentenceRow(String lessonId, String englishRawText, String japaneseRawText) {
         this.lessonId = lessonId;
         this.englishRawText = englishRawText;
@@ -46,5 +70,15 @@ public class EnJaSentenceRow {
                 ", englishTrimmedText='"+this.getEnglishTrimmedText()+'\''+
                 ", japaneseNoSpaceText='"+this.getJapaneseNoSpaceText()+'\''+
                 '}';
+    }
+    public static class SentenceInfo {
+        @Expose
+        public String rawText;
+        @Expose
+        public String audioFileName;
+        public SentenceInfo(String rawText, String audioFileName) {
+            this.rawText = rawText;
+            this.audioFileName = audioFileName;
+        }
     }
 }

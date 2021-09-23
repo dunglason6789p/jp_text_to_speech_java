@@ -9,6 +9,7 @@ import com.google.cloud.texttospeech.v1.SynthesizeSpeechResponse;
 import com.google.cloud.texttospeech.v1.TextToSpeechClient;
 import com.google.cloud.texttospeech.v1.VoiceSelectionParams;
 import com.google.protobuf.ByteString;
+import ntson.config.MyTTSConfig;
 import ntson.enums.LanguageCode;
 import ntson.util.FileUtil;
 import org.slf4j.Logger;
@@ -52,6 +53,10 @@ public class MyTextToSpeechServicePremium {
             // Perform the text-to-speech request on the text input with the selected voice parameters and audio file type
             SynthesizeSpeechResponse response
                     = textToSpeechClient.synthesizeSpeech(input, voiceSelectionParams, audioConfig);
+            // Sleep after sending request
+            if (MyTTSConfig.TIME_MS_SLEEP_AFTER_API_CALL > 0) {
+                Thread.sleep(MyTTSConfig.TIME_MS_SLEEP_AFTER_API_CALL);
+            }
             
             // Get the audio contents from the response
             ByteString audioContents = response.getAudioContent();
@@ -60,7 +65,7 @@ public class MyTextToSpeechServicePremium {
             String filePathStr = buildAudioFilePath(text, LanguageCode.JA_JP, SsmlVoiceGender.FEMALE, audioEncoding);
             try (OutputStream out = new FileOutputStream(filePathStr)) {
                 out.write(audioContents.toByteArray());
-                System.out.println("Audio content written to file:"+filePathStr);
+                logger.trace("Audio content written to file:"+filePathStr);
                 return filePathStr;
             }
         } catch (Exception e) {
@@ -76,7 +81,7 @@ public class MyTextToSpeechServicePremium {
         final String filePathStr = buildAudioFilePath(text, LanguageCode.JA_JP, SsmlVoiceGender.FEMALE, audioEncoding);
         boolean isFileExist = FileUtil.isFileExist(filePathStr);
         if (isFileExist) {
-            logger.info("File with path {} exists! Now returning that path!", filePathStr);
+            logger.warn("File with path {} exists! Now returning that path!", filePathStr);
             return filePathStr;
         } else {
             logger.info("File with path {} NOT exists! Now calling Google TTS API!", filePathStr);
