@@ -94,7 +94,7 @@ public class MainAuto_EnJpSentences {
     }
     private static void sleepStandard() {
         try {
-            Thread.sleep(500/*TODO:DEMO*/);
+            Thread.sleep(50/*TODO:DEMO*/);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
